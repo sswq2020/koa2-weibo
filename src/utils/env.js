@@ -7,4 +7,5 @@
  module.exports = {
     isDev: ENV=== 'dev',
     isProd: ENV=== 'production',
+    isTest: ENV=== 'test',
  }
