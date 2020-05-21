@@ -14,6 +14,7 @@ const { isProd } = require('./utils/env')
 
 const index = require('./routes/index')
 const userViewRouter = require('./routes/view/user')
+const userAPIRouter = require('./routes/api/user')
 const errorViewRouter = require('./routes/view/error')
 
 // error handler 
@@ -62,7 +63,10 @@ app.use(session({
 // routes
 
 app.use(index.routes(), index.allowedMethods())
+
 app.use(userViewRouter.routes(), index.allowedMethods())
+app.use(userAPIRouter.routes(), index.allowedMethods())
+
 app.use(errorViewRouter.routes(), index.allowedMethods()) // 404路由一定放到最后 
 
 // error-handling
