@@ -3,7 +3,7 @@
  * @author sswq
  */
 
-const validate = require('./_validatorr')
+const validate = require('./_validator')
 
 // 校验规则
 const SCHEMA = {
