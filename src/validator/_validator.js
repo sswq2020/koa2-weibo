@@ -10,11 +10,12 @@ const ajv = new Ajv({
 
 
 /**
- * 
+ * @description 利用ajv库判断校验是否合格
  * @param {Object} schema josn schema的规则
  * @param {Object} data 待校验的数据
  */
 function validate(schema, data = {}) {
+    const valid = ajv.validate(schema,data)
     if (!valid) {
         return ajv.errors[0]
     }
