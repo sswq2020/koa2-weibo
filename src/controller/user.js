@@ -3,9 +3,14 @@
  * @author sswq
  */
 
-const { getUserInfo, createUser } = require('../services/user')
+const { getUserInfo, createUser, deleteUser } = require('../services/user')
 const { createSuccessData, createErrorData } = require('../model/ResModel')
-const { registerUserNameNotExitInfo, registerUserNameExistInfo, registerFailInfo,loginFailInfo } = require('../model/ErrorInfo')
+const {
+    deleteUserFailInfo,
+    registerUserNameNotExitInfo,
+    registerUserNameExistInfo,
+    registerFailInfo,
+    loginFailInfo } = require('../model/ErrorInfo')
 const doCrypto = require('../utils/cryp')
 
 /**
@@ -46,7 +51,7 @@ async function register({ userName, password, gender }) {
         console.log(ex.message, ex.stack)
         return createErrorData(registerFailInfo)
     }
-} 
+}
 
 /**
  * @description 登录
@@ -54,21 +59,36 @@ async function register({ userName, password, gender }) {
  * @param {string} userName
  * @param {string} password 
  */
-async function login({ctx, userName, password}) {
+async function login({ ctx, userName, password }) {
     // 登录成功 ctx.session.userInfo = xxx
     const userInfo = await getUserInfo(userName, doCrypto(password))
-    if(!userInfo){
+    if (!userInfo) {
         return createErrorData(loginFailInfo)
     }
-    if(ctx.session.userInfo === null || ctx.session.userInfo === undefined) {
+    if (ctx.session.userInfo === null || ctx.session.userInfo === undefined) {
         ctx.session.userInfo = userInfo
     }
     return createSuccessData()
 }
 
+/**
+ * 
+ * @param {string} userName 用户名 
+ */
+async function deleteCurUser(ctx,userName) {
+    const result = await deleteUser(userName)
+    // service
+    if (result) {
+        ctx.session.userInfo = null
+        return createSuccessData()
+    } else {
+        return createErrorData(deleteUserFailInfo)
+    }
+}
 
 module.exports = {
     isExist,
     register,
-    login
+    login,
+    deleteCurUser
 }
