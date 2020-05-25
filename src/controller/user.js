@@ -11,7 +11,8 @@ const {
     registerUserNameExistInfo,
     registerFailInfo,
     loginFailInfo,
-    changeInfoFailInfo
+    changeInfoFailInfo,
+    changePasswordFailInfo
 } = require('../model/ErrorInfo')
 const doCrypto = require('../utils/cryp')
 
@@ -81,7 +82,7 @@ async function deleteCurUser(ctx,userName) {
     const result = await deleteUser(userName)
     // service
     if (result) {
-        ctx.session.userInfo = null
+        delete ctx.session.userInfo
         return createSuccessData()
     } else {
         return createErrorData(deleteUserFailInfo)
@@ -118,10 +119,46 @@ async function changeInfo(ctx, { nickName, city, picture }) {
     }
 }
 
+/**
+ * @description 修改用户密码
+ * @param {number} password  原密码
+ * @param {number} newPassword 新密码 
+ */
+async function changePassword(ctx, { password,newPassword}) {
+    const { userName } = ctx.session.userInfo
+    if(password === newPassword) {
+        return createErrorData(changePasswordFailInfo)
+    }
+
+    const result = await updateUser({
+        newPassword:doCrypto(newPassword)
+    },{
+        userName,
+        password:doCrypto(password)
+    })
+    // service
+    if (result) {
+        return createSuccessData()
+    } else {
+        return createErrorData(changeInfoFailInfo)
+    }
+}
+
+/**
+ * @description 退出登录
+ * @param {Pbject} ctx 上下文
+ */
+async function logout(ctx) {
+    delete ctx.session.userInfo
+    return createSuccessData()
+}
+
 module.exports = {
     isExist,
     register,
     login,
     deleteCurUser,
-    changeInfo
+    changeInfo,
+    changePassword,
+    logout
 }
