@@ -12,7 +12,7 @@ const { formatUser } = require('./_format')
  * @param {string} password 
  */
 async function getUserInfo(userName, password) {
-    whereOpt = {
+    let whereOpt = {
         userName
     }
     if (password) {
@@ -66,8 +66,49 @@ async function deleteUser(userName){
 }
 
 
+/**
+ * @description  修改用户信息
+ * @param {Object} param0 要修改的内容 {newPassword,newNickName,newPicture,newCity}
+ * @param {Object} city 查询条件 {userName password}
+ */
+async function updateUser({
+    newPassword,newNickName,newPicture,newCity
+},{
+    userName,password
+}){
+
+    let updateData = {}
+    if(newPassword){
+        updateData.password = newPassword
+    } 
+    if(newNickName){
+        updateData.nickName = newNickName
+    }     
+    if(newPicture){
+        updateData.picture = newPicture
+    } 
+    if(newCity){
+        updateData.city = newCity
+    } 
+
+    let whereOpt = {
+        userName
+    }
+    if (password) {
+        Object.assign(whereOpt, { password })
+    }
+
+    const result = await User.update(updateData,{
+        where:whereOpt
+    })
+
+    return result[0] > 0
+}
+
+
 module.exports = {
     getUserInfo,
     createUser,
-    deleteUser
+    deleteUser,
+    updateUser
 }
