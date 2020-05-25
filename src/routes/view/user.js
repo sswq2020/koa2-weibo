@@ -5,6 +5,8 @@
 
 const router = require('koa-router')()
 
+const {genLoginRedirect} = require('../../middlewares/loginChecks')
+
 const getSessionUserInfo = (ctx)=>{
     const userInfo = ctx.session.userInfo
     if(!userInfo){
@@ -26,6 +28,10 @@ router.get('/login', async (ctx, next) => {
 
 router.get('/register', async (ctx, next) => {
     await ctx.render('register', getSessionUserInfo(ctx))
+})
+
+router.get('/setting',genLoginRedirect(), async (ctx,next)=>{
+    await ctx.render('setting', ctx.session.userInfo)
 })
 
 module.exports = router
