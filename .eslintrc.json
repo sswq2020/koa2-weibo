@@ -17,6 +17,11 @@
         "semi": [
             "error",
             "never"
-        ]
+        ],
+        "no-dupe-args": 2,
+        "no-eq-null": 2,
+        "no-func-assign": 2,
+        "no-undef": 1,
+        "no-use-before-define": 2
     }
 }
