@@ -82,7 +82,6 @@ async function deleteCurUser(ctx,userName) {
     const result = await deleteUser(userName)
     // service
     if (result) {
-        delete ctx.session.userInfo
         return createSuccessData()
     } else {
         return createErrorData(deleteUserFailInfo)
