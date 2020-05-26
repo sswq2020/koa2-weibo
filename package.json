@@ -28,7 +28,8 @@
     "koa-generic-session": "^2.0.4",
     "ajv":"^6.12.2",
     "formidable-upload-koa":"^1.0.1", 
-    "fs-extra":"^9.0.0"
+    "fs-extra":"^9.0.0",
+    "xss":"^1.0.6"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

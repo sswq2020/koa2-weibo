@@ -3,6 +3,7 @@
  * @author sswq
  */
 
+const xss = require('xss')
 const { createSuccessData, createErrorData } = require('../model/ResModel')
 const { getUserInfo} = require('../services/user')
 const { createBlog} = require('../services/blog')
@@ -27,7 +28,7 @@ async function releaseBlog(ctx,{content, image}) {
     try {
         await createBlog(
             {
-                content,
+                content:xss(content),
                 userId:id,
                 image
             })
