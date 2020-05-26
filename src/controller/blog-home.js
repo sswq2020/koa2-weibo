@@ -26,13 +26,13 @@ async function releaseBlog(ctx,{content, image}) {
     }
     // 注册service
     try {
-        await createBlog(
+        const blog = await createBlog(
             {
                 content:xss(content),
                 userId:id,
                 image
             })
-        return createSuccessData()
+        return createSuccessData(blog)
     } catch (ex) {
         console.log(ex.message, ex.stack)
         return createErrorData(createBlogFailInfo)
