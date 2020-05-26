@@ -15,7 +15,7 @@ const { REDIS_CONF } = require('./conf/db')
 const { isProd } = require('./utils/env')
 const {SESSION_SECRET_KEY} = require('./conf/secretKeys')
 
-const index = require('./routes/index')
+const blogViewRouter = require('./routes/view/blog')
 const userViewRouter = require('./routes/view/user')
 const userAPIRouter = require('./routes/api/user')
 const utilsAPIRouter = require('./routes/api/utils')
@@ -65,18 +65,17 @@ app.use(session({
 }))
 
 
-// routes
+// routes 
 
-app.use(index.routes(), index.allowedMethods())
+app.use(blogViewRouter.routes(), blogViewRouter.allowedMethods())
+app.use(userViewRouter.routes(), userViewRouter.allowedMethods())
+app.use(userAPIRouter.routes(), userAPIRouter.allowedMethods())
+app.use(utilsAPIRouter.routes(), utilsAPIRouter.allowedMethods())
 
-app.use(userViewRouter.routes(), index.allowedMethods())
-app.use(userAPIRouter.routes(), index.allowedMethods())
-app.use(utilsAPIRouter.routes(), index.allowedMethods())
-
-app.use(errorViewRouter.routes(), index.allowedMethods()) // 404路由一定放到最后 
+app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods()) // 404路由一定放到最后 
 
 // error-handling
-app.on('error', (err, ctx) => {
+app.on('error', (err, ctx) => { 
     console.error('server error', err, ctx)
 })
 
