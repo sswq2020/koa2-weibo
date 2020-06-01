@@ -31,8 +31,8 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
         curUserInfo = myUserInfo
     } else {
         // 不是当前登录用户
-        const existResult = await isExist
-        if(existResult === ERR_OK){
+        const existResult = await isExist(profileUserName)
+        if(existResult.errno === ERR_OK){
             curUserInfo = existResult.data
         }else {
             // 用户名不存在
