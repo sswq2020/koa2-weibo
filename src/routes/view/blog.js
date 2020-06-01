@@ -7,6 +7,7 @@ const router = require('koa-router')()
 
 const { genLoginRedirect } = require('../../middlewares/loginChecks')
 const { getProfileBlogList } = require('../../controller/blog-profile')
+const { getSquareBlogList } = require('../../controller/blog-square')
 const { isExist } = require('../../controller/user')
 const {ERR_OK} = require('../../conf/constant')
 
@@ -62,6 +63,30 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
             isMe
         }
     })
+})
+
+// 广场页
+router.get('/square',genLoginRedirect(),async(ctx,next)=>{
+    // 获取微博数据,第一页
+    const res = await getSquareBlogList(0)
+    const {
+        blogList,
+        pageSize,
+        pageIndex,
+        count,
+        isEmpty
+    } = res.data
+ 
+    await ctx.render('square', {
+        blogData: {
+            blogList,
+            pageSize,
+            pageIndex, 
+            count,
+            isEmpty
+        }
+    })
+
 })
 
 module.exports = router

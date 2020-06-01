@@ -16,8 +16,10 @@ const { isProd } = require('./utils/env')
 const {SESSION_SECRET_KEY} = require('./conf/secretKeys')
 
 const blogViewRouter = require('./routes/view/blog')
+const blogSquareAPIRouter = require('./routes/api/blog-square')
 const blogHomeAPIRouter = require('./routes/api/blog-home')
 const profileAPIRouter = require('./routes/api/blog-profile')
+
 
 
 const userViewRouter = require('./routes/view/user')
@@ -72,6 +74,7 @@ app.use(session({
 // routes 
 
 app.use(blogViewRouter.routes(), blogViewRouter.allowedMethods())
+app.use(blogSquareAPIRouter.routes(), blogSquareAPIRouter.allowedMethods())
 app.use(blogHomeAPIRouter.routes(), blogHomeAPIRouter.allowedMethods())
 app.use(profileAPIRouter.routes(), profileAPIRouter.allowedMethods())
 
