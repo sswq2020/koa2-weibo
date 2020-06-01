@@ -12,7 +12,7 @@ redisClient.on('err',err=>{
 })
 
 /**
-  * redis set
+  * @description redis set
   * @param {string} key 键
   * @param {string} val 值
   * @param {number} timeout 过期时间 单位s
@@ -26,7 +26,7 @@ function set(key,val,timeout = 60 * 60){
 }
 
 /**
-  * 
+  * @description redis get
   * @param {string} key 键 
   */
 function get(key){
@@ -48,4 +48,9 @@ function get(key){
         })
     })
     return promise
+}
+
+module.exports= {
+    get,
+    set
 }
