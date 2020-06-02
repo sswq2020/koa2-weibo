@@ -8,6 +8,7 @@ const router = require('koa-router')()
 const { genLoginRedirect } = require('../../middlewares/loginChecks')
 const { getProfileBlogList } = require('../../controller/blog-profile')
 const { getSquareBlogList } = require('../../controller/blog-square')
+const { getFans } = require('../../controller/user-relation')
 const { isExist } = require('../../controller/user')
 const {ERR_OK} = require('../../conf/constant')
 
@@ -41,6 +42,10 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
         }
     }
 
+    // 粉丝 controller
+    const fansRes = await getFans(curUserInfo.id)
+    const { count: fansCount, userList: fansList } = fansRes.data
+
     const res = await getProfileBlogList(profileUserName)
     const {
         blogList,
@@ -60,7 +65,11 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
         },
         userData: {
             userInfo: curUserInfo,
-            isMe
+            isMe,
+            fansData:{
+                count:fansCount,
+                list:fansList
+            }
         }
     })
 })
