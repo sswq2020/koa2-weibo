@@ -16,7 +16,7 @@
  }
 
  //存储 cookie
- let COOKIE = ""
+ let S_COOKIE = ""
 
  // 注册
  test('注册一个用户,应该成功',async ()=>{
@@ -77,7 +77,7 @@ expect(res.body.errno).not.toBe(0)
          .send(testUser)
    expect(res.body.errno).toBe(0)   
 
-   COOKIE = res.headers['set-cookie'].join(';')
+   S_COOKIE = res.headers['set-cookie'].join(';')
 
 })
 
@@ -88,7 +88,7 @@ expect(res.body.errno).not.toBe(0)
         .send({
          nickName:'测试昵称', city:'测试城市', picture:'/test.png'
         })
-        .set('cookie',COOKIE)
+        .set('cookie',S_COOKIE)
   expect(res.body.errno).toBe(0)   
 })
 
@@ -100,7 +100,7 @@ expect(res.body.errno).not.toBe(0)
          password,
          newPassword: `p_${Date.now()}`
         })
-        .set('cookie',COOKIE)
+        .set('cookie',S_COOKIE)
   expect(res.body.errno).toBe(0)   
 })
 
@@ -109,7 +109,7 @@ expect(res.body.errno).not.toBe(0)
  test('删除用户,应该成功',async ()=>{
     const res = await server
          .post('/api/user/delete')
-         .set('cookie',COOKIE)
+         .set('cookie',S_COOKIE)
    expect(res.body.errno).toBe(0)   
 })
 
@@ -118,7 +118,7 @@ expect(res.body.errno).not.toBe(0)
  test('退出登录,应该成功',async ()=>{
    const res = await server
         .post('/api/user/logout')
-        .set('cookie',COOKIE)
+        .set('cookie',S_COOKIE)
   expect(res.body.errno).toBe(0)   
 })
 

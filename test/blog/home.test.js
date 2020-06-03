@@ -4,7 +4,7 @@
  */
 
 const server = require('../server')
-const {COOKIE} = require('../testUserInfo')
+const {S_COOKIE} = require('../testUserInfo')
 let BLOG_ID = ''
 // 注册
 test('创建一条微博,应该成功', async () => {
@@ -17,7 +17,7 @@ test('创建一条微博,应该成功', async () => {
             content,
             image
         })
-        .set('cookie',COOKIE)
+        .set('cookie',S_COOKIE)
     expect(res.body.errno).toBe(0)
     expect(res.body.data.content).toBe(content)
     expect(res.body.data.image).toBe(image)
