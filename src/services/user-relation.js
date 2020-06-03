@@ -31,14 +31,42 @@ async function getUserByFollower(followerId){
     // result.rows 查询结果 数组
     let userList = result.rows.map(row => row.dataValues)
     userList = formatUser(userList)
-
     return {
         count:result.count,
         userList
     }
 }
 
+/**
+ * @description 建立关注者和被关注者之间的关联
+ * @param {number} followerId 准备关注的用户ID
+ * @param {number} userId 用户ID
+ */
+async function addFollower(followerId,userId){
+    let addFollowerData = {userId,followerId}
+    const result = await UserRelation.create(addFollowerData)
+    return result.dataValues
+}
+
+/**
+ * @description 取消关注者和被关注者之间的关联
+ * @param {number} followerId 被关注的用户ID
+ * @param {number} myUserId 用户ID
+ */
+async function cancelFollower(followerId,userId){
+    const result = await UserRelation.destroy({
+        where:{
+            userId,
+            followerId
+        }
+    })
+    // 返回删除的行数
+    return result > 0 
+}
+
 
 module.exports = {
-    getUserByFollower
+    getUserByFollower,
+    addFollower,
+    cancelFollower
 }
