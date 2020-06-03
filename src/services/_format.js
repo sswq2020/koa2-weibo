@@ -21,8 +21,8 @@ function _formatPicture(obj){
  * @param {Object} obj 数据
  */
 function _formatDBTime(obj){
-    obj.createdAtFormat = timeFormat(obj.createdAt)
-    obj.updatedAtFormat = timeFormat(obj.updatedAt)
+    obj.createdAtFormat = obj.createdAt ? timeFormat(obj.createdAt) : null
+    obj.updatedAtFormat = obj.updatedAt ? timeFormat(obj.updatedAt) : null
     return obj
 }
 
@@ -53,7 +53,7 @@ function formatUser(list){
     }
 
     if(Array.isArray(list)){
-        return list.map(_formatDBTime)
+        return list.map(_formatDBTime).map(_formatPicture)
     }
 
     return _formatPicture(list)
