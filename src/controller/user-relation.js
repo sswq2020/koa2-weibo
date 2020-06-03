@@ -3,7 +3,7 @@
  * @author sswq
  */
 
-const {getUserByFollower,addFollower,cancelFollower} = require('../services/user-relation')
+const {getUserByFollower,getFollowerByUser,addFollower,cancelFollower} = require('../services/user-relation')
 const { createSuccessData,createErrorData } = require('../model/ResModel')
 const {addFollowerFailInfo,deleteFollowerFailInfo} = require('../model/ErrorInfo')
 
@@ -12,9 +12,19 @@ const {addFollowerFailInfo,deleteFollowerFailInfo} = require('../model/ErrorInfo
  * @param {number} userId 用户Id
  */ 
 async function getFans(userId){
-    const result = await getUserByFollower(userId)
-    return createSuccessData(result)
+    const {count,userList:fansList} = await getUserByFollower(userId)
+    return createSuccessData({count,fansList})
 }
+
+/**
+ * @description 获取关注的微博主
+ * @param {number} userId 用户Id
+ */ 
+async function getFollowers(userId){
+    const {count,userList:followersList} = await getFollowerByUser(userId)
+    return createSuccessData({count,followersList})
+}
+
 
 /**
  * @description 关注此用户
@@ -49,6 +59,7 @@ async function unfollow(followerId,myUserId){
 
 module.exports = {
     getFans,
+    getFollowers,
     follow,
     unfollow
 }

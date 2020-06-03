@@ -38,6 +38,42 @@ async function getUserByFollower(followerId){
 }
 
 /**
+ * @description 根据微博主id获取他关注了哪些微博主列表
+ * @param {number} userId 微博主id
+ */ 
+async function getFollowerByUser(userId){
+    const result = await UserRelation.findAndCountAll({
+        attributes:['followerId'] ,
+        where:{
+            userId
+        },
+        order:[
+            ['id','desc']
+        ],
+        include:[
+            {
+                model:User,
+                attributes:['id','userName','nickName','picture'] ,
+            }
+        ]
+    })
+
+    // result.count 总数
+    // result.rows 查询结果 数组
+    let userRelationList = result.rows.map(row => row.dataValues).map(item=>{
+        let user = item.user.dataValues
+        item.user = formatUser(user)
+        item = Object.assign({},item,{...item.user})
+        return item
+    })
+    return {
+        count:result.count,
+        userList:userRelationList
+    }
+}
+
+
+/**
  * @description 建立关注者和被关注者之间的关联
  * @param {number} followerId 准备关注的用户ID
  * @param {number} userId 用户ID
@@ -67,6 +103,7 @@ async function cancelFollower(followerId,userId){
 
 module.exports = {
     getUserByFollower,
+    getFollowerByUser,
     addFollower,
     cancelFollower
 }

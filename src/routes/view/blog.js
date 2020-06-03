@@ -8,7 +8,7 @@ const router = require('koa-router')()
 const { genLoginRedirect } = require('../../middlewares/loginChecks')
 const { getProfileBlogList } = require('../../controller/blog-profile')
 const { getSquareBlogList } = require('../../controller/blog-square')
-const { getFans } = require('../../controller/user-relation')
+const { getFans,getFollowers } = require('../../controller/user-relation')
 const { isExist } = require('../../controller/user')
 const {ERR_OK} = require('../../conf/constant')
 
@@ -44,10 +44,14 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
 
     // 粉丝 controller
     const fansRes = await getFans(curUserInfo.id)
-    const { count: fansCount, userList: fansList } = fansRes.data
+    const { count: fansCount, fansList } = fansRes.data
 
-    // 我是否关注了此人
+    // 是否关注了此人
     const amIFollowed = fansList.some(item => item.id === myUserInfo.id)
+
+    // 关注了哪些微博主
+    const followerRes = await getFollowers(curUserInfo.id)
+    const { count: followersCount, followersList } = followerRes.data
 
 
     const res = await getProfileBlogList(profileUserName)
@@ -73,6 +77,10 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
             fansData:{
                 count:fansCount,
                 list:fansList
+            },
+            followersData:{
+                count:followersCount,
+                list:followersList
             },
             amIFollowed
         }
