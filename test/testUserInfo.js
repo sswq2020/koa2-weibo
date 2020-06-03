@@ -12,7 +12,7 @@ const S_COOKIE = 'weibo.sid=RjUybioYBm6bUHs8eI4MBmw9w8n2jRYc; weibo.sid.sig=VQow
 const V_COOKIE = 'weibo.sid=jcSEvv5hGWv5N5Qbf6AXKRkRQqjGX-K1; weibo.sid.sig=cOxDg_gggGecZEoCpvzDTBebtNw'
 
 module.exports = {
-    S_ID:1,
+    S_ID:3,
     S_COOKIE,
     S_USER_NAME:'sswq',
 
