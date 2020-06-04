@@ -5,8 +5,9 @@
 
 const xss = require('xss')
 const { createSuccessData, createErrorData } = require('../model/ResModel')
-const { getUserInfo} = require('../services/user')
-const { createBlog} = require('../services/blog')
+const { getUserInfo } = require('../services/user')
+const { createBlog, getFollowersBlogList } = require('../services/blog')
+const { PAGE_SIZE } = require('../conf/constant')
 const {
     registerUserNameNotExitInfo,
     createBlogFailInfo,
@@ -18,8 +19,8 @@ const {
   * @param {string} image 
   * @param {Object} ctx 
   */
-async function releaseBlog(ctx,{content, image}) {
-    const {id,userName} = ctx.session.userInfo
+async function releaseBlog(ctx, { content, image }) {
+    const { id, userName } = ctx.session.userInfo
     const userInfo = await getUserInfo(userName)
     if (!userInfo) {
         return createErrorData(registerUserNameNotExitInfo)
@@ -28,8 +29,8 @@ async function releaseBlog(ctx,{content, image}) {
     try {
         const blog = await createBlog(
             {
-                content:xss(content),
-                userId:id,
+                content: xss(content),
+                userId: id,
                 image
             })
         return createSuccessData(blog)
@@ -39,6 +40,25 @@ async function releaseBlog(ctx,{content, image}) {
     }
 }
 
-module.exports ={
-    releaseBlog
+/**
+ * @description 获取首页微博列表
+ * @param {number} userId 
+ * @param {number} pageIndex 
+ */
+async function getHomeBlogList(userId, pageIndex = 0) {
+    // service
+    const { count, blogList } = await getFollowersBlogList({ userId, pageIndex, pageSize: PAGE_SIZE })
+    return createSuccessData(
+        {
+            isEmpty: blogList.length === 0,
+            count,
+            blogList,
+            pageIndex,
+            pageSize: PAGE_SIZE
+        })
+}
+
+module.exports = {
+    releaseBlog,
+    getHomeBlogList
 }
