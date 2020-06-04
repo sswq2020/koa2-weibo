@@ -1,13 +1,34 @@
-<%- include('layout/header', { title: '微博 - 首页', isNav: true, isInputBlog:true })%>
+<%- include('layout/header', { title: '微博 - 首页', isNav: true, isInputBlog:true, list: true })%>
 <div class="container margin-top-20">
   <div class="row">
     <div class="col-8">
       <%- include('widgets/input')%>
     </div>
+
+    <!-- 右侧 -->
     <div class="col-4">
-      右侧
-    </div>
+      <!-- 个人信息 -->
+      <div class="right-item">
+        <%- include('widgets/user-info', {
+                    userInfo: userData.userInfo,
+                    isMe: true,
+                    amIFollowed:false
+                });%>
+      </div>
+
+      <!-- 粉丝列表 -->
+      <%- include('widgets/fans',{
+                count:userData.fansData.count,
+                userList:userData.fansData.list
+            }) %>
+
+      <!-- 列表 -->
+      <%- include('widgets/followers',{
+                count:userData.followersData.count,
+                userList:userData.followersData.list
+            }) %>
+    </div> <!-- 右侧结束 -->
   </div>
 </div>
-  
+
 <%- include('layout/footer')%>

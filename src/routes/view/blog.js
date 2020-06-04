@@ -14,7 +14,31 @@ const {ERR_OK} = require('../../conf/constant')
 
 // 首页
 router.get('/', genLoginRedirect(), async (ctx, next) => {
-    await ctx.render('index', {})
+    const myUserInfo = ctx.session.userInfo
+
+    // 粉丝 controller
+    const fansRes = await getFans(myUserInfo.id)
+    const { count: fansCount, fansList } = fansRes.data
+
+
+    // 关注了哪些微博主
+    const followerRes = await getFollowers(myUserInfo.id)
+    const { count: followersCount, followersList } = followerRes.data
+
+
+    await ctx.render('index', {
+        userData: {
+            userInfo: myUserInfo,
+            fansData:{
+                count:fansCount,
+                list:fansList
+            },
+            followersData:{
+                count:followersCount,
+                list:followersList
+            }
+        }
+    })
 })
 
 // 假如用户自己输入地址,不加username,系统自动去跳转 
