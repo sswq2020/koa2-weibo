@@ -3,7 +3,7 @@
  * @author sswq
  */
 
-const { Blog,User } = require('../db/model/index')
+const { Blog,User,UserRelation } = require('../db/model/index')
 const {formatUser,formatBlog} = require('./_format')
 
 /**
@@ -68,7 +68,52 @@ async function getBlogListByUser({userName,pageIndex = 0,pageSize = 10}){
 
 }
 
+/**
+ * @description 根据userId查找到他所有关注的微博主followers编写的微博列表,这里注意因为我们
+ * @param {string} userId 用户Id
+ * @param {number} pageIndex 页数
+ * @param {number} pageSize 每页数量
+ */
+async function getFollowersBlogList({userId,pageIndex = 0, pageSize = 10}){
+    debugger
+    const result = await Blog.findAndCountAll({
+        limit: pageSize, // 每页多少条
+        offset: pageIndex * pageSize, // 跳过多少条     
+        order:[
+            ['id','desc'] // 排序的规则根据微博,倒序排列
+        ],
+        include:[
+            {
+                model:User,
+                attributes:['userName','nickName','picture']
+            },
+            {
+                model:UserRelation,
+                attributes:['userId','followerId'],
+                where:{
+                    userId
+                }
+            }
+        ]   
+    })
+
+    // 格式化数据
+    let blogList = result.rows.map(row => row.dataValues)
+    blogList = formatBlog(blogList)
+    blogList = blogList.map(blogItem => {
+        blogItem.user = formatUser(blogItem.user.dataValues)
+        return blogItem
+    })
+
+    return {
+        count:result.count,
+        blogList
+    }
+}
+
+
 module.exports = {
     createBlog,
-    getBlogListByUser
+    getBlogListByUser,
+    getFollowersBlogList
 } 
