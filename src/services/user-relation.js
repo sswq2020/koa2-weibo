@@ -5,6 +5,7 @@
 
 const {User,UserRelation} = require('../db/model/index')
 const {formatUser} = require('./_format')
+const Op = require('sequelize').Op
 
 /**
  * @description 根据被关注人的id获取被关注人的的粉丝列表
@@ -20,7 +21,10 @@ async function getUserByFollower(followerId){
             {
                 model:UserRelation,
                 where:{
-                    followerId
+                    followerId,
+                    userId:{
+                        [Op.ne]:followerId   //sequelize的条件查询  https://github.com/demopark/sequelize-docs-Zh-CN/blob/v5/querying.md
+                    }
                 }
             }
             
@@ -45,7 +49,10 @@ async function getFollowerByUser(userId){
     const result = await UserRelation.findAndCountAll({
         attributes:['followerId'] ,
         where:{
-            userId
+            userId,
+            followerId:{
+                [Op.ne]:userId
+            }
         },
         order:[
             ['id','desc']
