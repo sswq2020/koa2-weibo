@@ -54,6 +54,18 @@
  })
 
 
+ // 获取at列表
+ test('在sswq微博首页,使用at功能,应该有vivo', async ()=>{
+   const res = await server
+   .get('/api/user/getAtList')
+   .set('cookie',S_COOKIE)
+   const atList = res.body
+   const hasUserName = atList.some(item => item.indexOf(`- ${V_USER_NAME}`) > 0)
+   expect(hasUserName).toBe(true)  
+})
+
+
+
  test('sswq取消关注vivo，应该成功', async ()=>{
     const res = await server
     .post('/api/profile/unfollow')
