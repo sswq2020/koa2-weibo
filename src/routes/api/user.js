@@ -12,6 +12,7 @@ const {
     deleteCurUser,
     changeInfo,
     changePassword} = require('../../controller/user')
+const {getFollowers} = require('../../controller/user-relation')    
 const genValidator = require('../../middlewares/validator')
 const userValidate = require('../../validator/user')
 const {genLoginCheck} =require('../../middlewares/loginChecks')
@@ -70,6 +71,18 @@ router.patch('/changePassword', genLoginCheck(), genValidator(userValidate), asy
 // 退出登录
 router.post('/logout', genLoginCheck(), async (ctx, next) => {
     ctx.body = await logout(ctx)
+})
+
+// 获取at列表,即关注人列表
+router.get('/getAtList',genLoginCheck(),async (ctx,next) => {
+    // controller
+    const {id} = ctx.session.userInfo
+    const res = await getFollowers(id)
+    const {followersList} = res.data
+    ctx.body = followersList.map(user => {
+        // 格式如[昵称]-[用户名]
+        return `${user.nickName} - ${user.userName}`
+    })
 })
 
 module.exports = router
