@@ -4,7 +4,7 @@
  */
 
 const { createSuccessData, createErrorData } = require('../model/ResModel')
-const {getAtRelationCount,getAtUserBlogList} = require('../services/at-relation')
+const {getAtRelationCount,getAtUserBlogList,updateAtRelation} = require('../services/at-relation')
 const { PAGE_SIZE } = require('../conf/constant')
 
 /**
@@ -29,7 +29,23 @@ async function getAtMeBlogList(userId,pageIndex = 0){
     return createSuccessData({count,blogList,pageIndex,pageSize:PAGE_SIZE})
 }
 
+/**
+ * @description 标记已读
+ * @param {number} userId  
+ */
+async function markAsRead(userId){
+    try {
+        await updateAtRelation({newIsRead: true},{userId,isRead:false})
+    } catch (error) {
+        console.error(error)
+    }
+
+    // 不需要返回success或者error
+}
+
+
 module.exports = {
     getAtMeCount,
-    getAtMeBlogList
+    getAtMeBlogList,
+    markAsRead
 }

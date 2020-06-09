@@ -9,7 +9,7 @@ const { genLoginRedirect } = require('../../middlewares/loginChecks')
 const { getProfileBlogList } = require('../../controller/blog-profile')
 const { getSquareBlogList } = require('../../controller/blog-square')
 const { getHomeBlogList } = require('../../controller/blog-home')
-const { getAtMeCount,getAtMeBlogList } = require('../../controller/blog-at')
+const { getAtMeCount,getAtMeBlogList,markAsRead } = require('../../controller/blog-at')
 
 const { getFans, getFollowers } = require('../../controller/user-relation')
 const { isExist } = require('../../controller/user')
@@ -160,14 +160,15 @@ router.get('/square', genLoginRedirect(), async (ctx, next) => {
 
 // atMe页
 router.get('/at-me',genLoginRedirect(),async(ctx,next) => {
-    const {id} = ctx.session.userInfo
+    /***当前登录用户Id**/
+    const {id:userId} = ctx.session.userInfo
 
     // 获取@数量
-    const atMeRes = await getAtMeCount(id)
+    const atMeRes = await getAtMeCount(userId)
     const { count: atCount } = atMeRes.data
 
     // 获取第一页数据 controller
-    const res = await getAtMeBlogList(id)
+    const res = await getAtMeBlogList(userId)
     const { count: blogCount, blogList, pageIndex, pageSize } = res.data
 
     await ctx.render('atMe', {
@@ -182,6 +183,10 @@ router.get('/at-me',genLoginRedirect(),async(ctx,next) => {
     })
 
     // 标记已读
+    if(atCount > 0) {
+        await markAsRead(userId)
+    }
+
 })
 
 module.exports = router
