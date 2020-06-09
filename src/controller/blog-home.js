@@ -7,7 +7,9 @@ const xss = require('xss')
 const { createSuccessData, createErrorData } = require('../model/ResModel')
 const { getUserInfo } = require('../services/user')
 const { createBlog, getFollowersBlogList } = require('../services/blog')
-const { PAGE_SIZE } = require('../conf/constant')
+const { createAtRelation } = require('../services/at-relation')
+
+const { PAGE_SIZE,REG_FOR_AT_WHO } = require('../conf/constant')
 const {
     registerUserNameNotExitInfo,
     createBlogFailInfo,
@@ -20,6 +22,24 @@ const {
   * @param {Object} ctx 
   */
 async function releaseBlog(ctx, { content, image }) {
+
+    // 分析并收集content 中的@用户
+    // content 格式如"hello @vivo - vivo 你好 @苹果 - apple"
+    const atUserNameList = []
+    content = content.replace(REG_FOR_AT_WHO,(matchstr,$1,$2)=>{
+        // 目的不是replace,而是获取userName,也就是$2
+        atUserNameList.push ($2)
+        return matchstr  // 替换不生效,符合预期 
+    })
+
+    // 根据@用户名查询用户信息
+    const atUserList = await Promise.all(
+        atUserNameList.map(async (userName)=> await getUserInfo(userName))
+    )
+
+    /***根据用户信息,获取用户id**/ 
+    const atUserIdList =  atUserList.map(user =>user.id)
+
     const { id, userName } = ctx.session.userInfo
     const userInfo = await getUserInfo(userName)
     if (!userInfo) {
@@ -33,6 +53,12 @@ async function releaseBlog(ctx, { content, image }) {
                 userId: id,
                 image
             })
+
+        //
+        await Promise.all(atUserIdList.map(
+            async(userId) => createAtRelation(blog.id,userId)
+        ))
+
         return createSuccessData(blog)
     } catch (ex) {
         console.log(ex.message, ex.stack)
