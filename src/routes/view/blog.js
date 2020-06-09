@@ -9,17 +9,19 @@ const { genLoginRedirect } = require('../../middlewares/loginChecks')
 const { getProfileBlogList } = require('../../controller/blog-profile')
 const { getSquareBlogList } = require('../../controller/blog-square')
 const { getHomeBlogList } = require('../../controller/blog-home')
-const { getFans,getFollowers } = require('../../controller/user-relation')
+const { getAtMeCount } = require('../../controller/blog-at')
+
+const { getFans, getFollowers } = require('../../controller/user-relation')
 const { isExist } = require('../../controller/user')
-const {ERR_OK} = require('../../conf/constant')
+const { ERR_OK } = require('../../conf/constant')
 
 // 首页
 router.get('/', genLoginRedirect(), async (ctx, next) => {
     const userInfo = ctx.session.userInfo
 
     // 获取第一页数据 controller
-    const res = await getHomeBlogList(userInfo.id,0) 
-    const {count:blogCount,blogList,isEmpty,pageIndex,pageSize} = res.data
+    const res = await getHomeBlogList(userInfo.id, 0)
+    const { count: blogCount, blogList, isEmpty, pageIndex, pageSize } = res.data
 
 
     // 粉丝 controller
@@ -31,21 +33,25 @@ router.get('/', genLoginRedirect(), async (ctx, next) => {
     const followerRes = await getFollowers(userInfo.id)
     const { count: followersCount, followersList } = followerRes.data
 
+    // @我的微博数
+    const atMeRes = await getAtMeCount(userInfo.id)
+    const { count: atCount } = atMeRes.data
 
     await ctx.render('index', {
         userData: {
             userInfo,
-            fansData:{
-                count:fansCount,
-                list:fansList
+            fansData: {
+                count: fansCount,
+                list: fansList
             },
-            followersData:{
-                count:followersCount,
-                list:followersList
-            }
+            followersData: {
+                count: followersCount,
+                list: followersList
+            },
+            atCount
         },
-        blogData:{
-            count:blogCount,
+        blogData: {
+            count: blogCount,
             blogList,
             isEmpty,
             pageIndex,
@@ -66,14 +72,14 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
     const myUserInfo = ctx.session.userInfo
     const isMe = profileUserName === myUserInfo.userName
     let curUserInfo
-    if(isMe){
+    if (isMe) {
         curUserInfo = myUserInfo
     } else {
         // 不是当前登录用户
         const existResult = await isExist(profileUserName)
-        if(existResult.errno === ERR_OK){
+        if (existResult.errno === ERR_OK) {
             curUserInfo = existResult.data
-        }else {
+        } else {
             // 用户名不存在
             return
         }
@@ -90,6 +96,9 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
     const followerRes = await getFollowers(curUserInfo.id)
     const { count: followersCount, followersList } = followerRes.data
 
+    // @我的微博数
+    const atMeRes = await getAtMeCount(myUserInfo.id)
+    const { count: atCount } = atMeRes.data
 
     const res = await getProfileBlogList(profileUserName)
     const {
@@ -104,28 +113,29 @@ router.get('/profile/:userName', genLoginRedirect(), async (ctx, next) => {
         blogData: {
             blogList,
             pageSize,
-            pageIndex, 
+            pageIndex,
             count,
             isEmpty
         },
         userData: {
             userInfo: curUserInfo,
             isMe,
-            fansData:{
-                count:fansCount,
-                list:fansList
+            fansData: {
+                count: fansCount,
+                list: fansList
             },
-            followersData:{
-                count:followersCount,
-                list:followersList
+            followersData: {
+                count: followersCount,
+                list: followersList
             },
-            amIFollowed
+            amIFollowed,
+            atCount
         }
     })
 })
 
 // 广场页
-router.get('/square',genLoginRedirect(),async(ctx,next)=>{
+router.get('/square', genLoginRedirect(), async (ctx, next) => {
     // 获取微博数据,第一页
     const res = await getSquareBlogList(0)
     const {
@@ -135,12 +145,12 @@ router.get('/square',genLoginRedirect(),async(ctx,next)=>{
         count,
         isEmpty
     } = res.data
- 
+
     await ctx.render('square', {
         blogData: {
             blogList,
             pageSize,
-            pageIndex, 
+            pageIndex,
             count,
             isEmpty
         }
